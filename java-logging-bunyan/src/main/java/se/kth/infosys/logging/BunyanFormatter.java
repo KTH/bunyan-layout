@@ -56,7 +56,7 @@ public class BunyanFormatter extends Formatter {
     private static final ZoneId SYSTEM_ZONE = ZoneId.systemDefault();
     private static final Map<Level, Integer> BUNYAN_LEVEL;
     static {
-        BUNYAN_LEVEL = new HashMap<Level, Integer>();
+        BUNYAN_LEVEL = new HashMap<>();
         BUNYAN_LEVEL.put(Level.SEVERE, 50);
         BUNYAN_LEVEL.put(Level.WARNING, 40);
         BUNYAN_LEVEL.put(Level.CONFIG, 30);
@@ -85,20 +85,20 @@ public class BunyanFormatter extends Formatter {
      * {@inheritDoc}
      */
     @Override
-    public String format(LogRecord record) {
+    public String format(LogRecord logRecord) {
         final JsonObject jsonEvent = new JsonObject();
 
         jsonEvent.addProperty("v", 0);
-        jsonEvent.addProperty("level", BUNYAN_LEVEL.get(record.getLevel()));
-        jsonEvent.addProperty("name", record.getLoggerName());
+        jsonEvent.addProperty("level", BUNYAN_LEVEL.get(logRecord.getLevel()));
+        jsonEvent.addProperty("name", logRecord.getLoggerName());
         jsonEvent.addProperty("hostname", HOSTNAME);
-        jsonEvent.addProperty("pid", record.getThreadID());
-        jsonEvent.addProperty("time", formatAsIsoUTCDateTime(record.getMillis()));
-        jsonEvent.addProperty("msg", record.getMessage());
-        jsonEvent.addProperty("src", record.getSourceClassName());
+        jsonEvent.addProperty("pid", logRecord.getThreadID());
+        jsonEvent.addProperty("time", formatAsIsoUTCDateTime(logRecord.getMillis()));
+        jsonEvent.addProperty("msg", logRecord.getMessage());
+        jsonEvent.addProperty("src", logRecord.getSourceClassName());
 
-        final Throwable thrown = record.getThrown();
-        if (thrown != null && record.getLevel().intValue() >= Level.WARNING.intValue()) {
+        final Throwable thrown = logRecord.getThrown();
+        if (thrown != null && logRecord.getLevel().intValue() >= Level.WARNING.intValue()) {
             JsonObject jsonError = new JsonObject();
 
             jsonError.addProperty("message", thrown.getMessage());
