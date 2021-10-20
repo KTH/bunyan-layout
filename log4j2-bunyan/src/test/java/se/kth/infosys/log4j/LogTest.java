@@ -16,6 +16,8 @@ public class LogTest {
         LOG.error("Error log");
         LOG.fatal("Fatal log");
 
+        LOG.error("0123456789 ".repeat(2458));
+
         try {
             throw new RuntimeException("A runtime exception");
         }

@@ -22,6 +22,9 @@ public class LogTest {
         LOG.info("Info log");
         LOG.warning("Warning log");
         LOG.severe("Severe log");
+
+        LOG.warning("0123456789 ".repeat(2458));
+
         try {
             throw new RuntimeException("A runtime exception");
         }

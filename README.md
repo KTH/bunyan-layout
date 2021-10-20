@@ -7,6 +7,8 @@ in various logging frameworks for Java.
 * [java-logging-bunyan](java-logging-bunyan/) - Java Util Logging log formatter.
 * [logback-bunyan](logback-bunyan/) - Logback classic log layout.
 
+Please note that the msg field is currently being truncated with a max length of 20000 characters.
+
 ## Development
 
 Please feel free to create pull requests.

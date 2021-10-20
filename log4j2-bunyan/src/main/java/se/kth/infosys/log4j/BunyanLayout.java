@@ -52,6 +52,8 @@ import com.google.gson.JsonObject;
  */
 @Plugin(name = "BunyanLayout", category = "Core", elementType = "layout", printObject = true)
 public class BunyanLayout extends AbstractStringLayout {
+    private static final int MSG_MAX_LENGTH = 20000;
+
     protected BunyanLayout(Charset charset) {
         super(charset);
     }
@@ -93,7 +95,7 @@ public class BunyanLayout extends AbstractStringLayout {
         }
         jsonEvent.addProperty("pid", event.getThreadId());
         jsonEvent.addProperty("time", formatAsIsoUTCDateTime(event.getTimeMillis()));
-        jsonEvent.addProperty("msg", event.getMessage().getFormattedMessage());
+        jsonEvent.addProperty("msg", getMessage(event.getMessage().getFormattedMessage()));
         jsonEvent.addProperty("src", event.getSource().getClassName());
 
         if (event.getLevel().isMoreSpecificThan(Level.WARN) && event.getThrown() != null) {
@@ -110,6 +112,13 @@ public class BunyanLayout extends AbstractStringLayout {
             jsonEvent.add("err", jsonError);
         }
         return GSON.toJson(jsonEvent) + "\n";
+    }
+
+    private String getMessage(final String msg) {
+        if (msg == null || msg.length() <= MSG_MAX_LENGTH) {
+            return msg;
+        }
+        return msg.substring(0, MSG_MAX_LENGTH);
     }
 
     private static String formatAsIsoUTCDateTime(long timeStamp) {

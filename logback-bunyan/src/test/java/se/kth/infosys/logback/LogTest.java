@@ -14,7 +14,7 @@ public class LogTest {
         LOG.info("Info log");
         LOG.warn("Warn log");
         LOG.error("Error log");
-
+        LOG.error("0123456789 ".repeat(2458));
         try {
             throw new RuntimeException("A runtime exception", nestedException1());
         }

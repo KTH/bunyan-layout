@@ -22,6 +22,8 @@ import java.util.Map;
 
 public class BunyanLayout extends LayoutBase<ILoggingEvent> {
 
+    private static final int MSG_MAX_LENGTH = 20000;
+
     private static final Map<Level, Integer> BUNYAN_LEVEL;
     static {
         BUNYAN_LEVEL = new HashMap<>();
@@ -56,7 +58,7 @@ public class BunyanLayout extends LayoutBase<ILoggingEvent> {
         }
         jsonEvent.addProperty("pid", getThreadId(event));
         jsonEvent.addProperty("time", formatAsIsoUTCDateTime(event.getTimeStamp()));
-        jsonEvent.addProperty("msg", event.getFormattedMessage());
+        jsonEvent.addProperty("msg", getMessage(event.getFormattedMessage()));
 
         if (event.getLevel().isGreaterOrEqual(Level.ERROR) && event.getThrowableProxy() != null) {
             JsonObject jsonError = new JsonObject();
@@ -67,7 +69,15 @@ public class BunyanLayout extends LayoutBase<ILoggingEvent> {
             jsonError.addProperty("stack", rtpc.convert(event));
             jsonEvent.add("err", jsonError);
         }
-        return GSON.toJson(jsonEvent) + "\n";    }
+        return GSON.toJson(jsonEvent) + "\n";
+    }
+
+    private String getMessage(final String msg) {
+        if (msg == null || msg.length() <= MSG_MAX_LENGTH) {
+            return msg;
+        }
+        return msg.substring(0, MSG_MAX_LENGTH);
+    }
 
     private long getThreadId(ILoggingEvent event) {
         long threadId;

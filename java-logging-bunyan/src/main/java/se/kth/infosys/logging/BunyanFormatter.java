@@ -53,8 +53,9 @@ import com.google.gson.JsonObject;
 public class BunyanFormatter extends Formatter {
     private static final Gson GSON = new GsonBuilder().create();
 
-    private static final ZoneId SYSTEM_ZONE = ZoneId.systemDefault();
     private static final Map<Level, Integer> BUNYAN_LEVEL;
+    private static final int MSG_MAX_LENGTH = 20000;
+
     static {
         BUNYAN_LEVEL = new HashMap<>();
         BUNYAN_LEVEL.put(Level.SEVERE, 50);
@@ -94,7 +95,7 @@ public class BunyanFormatter extends Formatter {
         jsonEvent.addProperty("hostname", HOSTNAME);
         jsonEvent.addProperty("pid", logRecord.getThreadID());
         jsonEvent.addProperty("time", formatAsIsoUTCDateTime(logRecord.getMillis()));
-        jsonEvent.addProperty("msg", logRecord.getMessage());
+        jsonEvent.addProperty("msg", getMessage(logRecord));
         jsonEvent.addProperty("src", logRecord.getSourceClassName());
 
         final Throwable thrown = logRecord.getThrown();
@@ -112,5 +113,13 @@ public class BunyanFormatter extends Formatter {
         }
 
         return GSON.toJson(jsonEvent) + "\n";
+    }
+
+    private String getMessage(final LogRecord logRecord) {
+        final String msg = logRecord.getMessage();
+        if (msg == null || msg.length() <= MSG_MAX_LENGTH) {
+            return msg;
+        }
+        return msg.substring(0, MSG_MAX_LENGTH);
     }
 }
